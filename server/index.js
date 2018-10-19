@@ -1,8 +1,11 @@
 
 const express = require('express')
+const bodyParser = require('body-parser');
 const consola = require('consola')
 const { Nuxt, Builder } = require('nuxt')
 const app = express()
+app.use(bodyParser.urlencoded({extended:true}))
+app.use(bodyParser.json())
 const host = process.env.HOST || '127.0.0.1'
 const port = process.env.PORT || 3000
 
@@ -25,6 +28,8 @@ async function start() {
     const builder = new Builder(nuxt)
     await builder.build()
   }
+
+  require('./api')(app, key)
 
   // Give nuxt middleware to express
   app.use(nuxt.render)

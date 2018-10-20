@@ -9,21 +9,71 @@ module.exports = function(app, key) {
     protocol: 'https'             
   };
 
-  let key = await EVT.EvtKey.randomPrivateKey();
+  async function getApiInfo(){
+    let key = await EVT.EvtKey.randomPrivateKey();
 
-  const apiCaller = EVT({
-    endpoint: network,
-    keyProvider: key
-  });
+    //get info
+    const apiCaller = EVT({
+      endpoint: network,
+      keyProvider: key
+    });
 
-  apiCaller.getInfo()
-  .then(res => {
-  	console.log(res)
-  })
-  .catch((e) => {
-     // TODO
-  })
+    const info = await apiCaller.getInfo();
+    console.log(info)
+    
+  }
   
+  async function createDomain() {
+  	await apiCaller.pushTransaction(
+	    { maxCharge: 10000, payer: "EVTXXXXXXXXXXXXXXXXXXXXXXXXXX" },
+	    new EVT.EvtAction("newdomain", {
+	        "name": testingTmpData.newDomainName,
+	        "creator": publicKey,
+	        "issue": {
+	            "name": "issue",
+	            "threshold": 1,
+	            "authorizers": [{
+	                "ref": "[A] " + publicKey,
+	                "weight": 1
+	            }]
+	        },
+	        "transfer": {
+	            "name": "transfer",
+	            "threshold": 1,
+	            "authorizers": [{
+	                "ref": "[G] .OWNER",
+	                "weight": 1
+	            }]
+	        },
+	        "manage": {
+	            "name": "manage",
+	            "threshold": 1,
+	            "authorizers": [{
+	                "ref": "[A] " + publicKey,
+	                "weight": 1
+	            }]
+	        }
+	    })
+	);
+  }
+  
+  async function issueNFTTokens() {
+  	await apiCaller.pushTransaction(
+	    { maxCharge: 10000, payer: "EVTXXXXXXXXXXXXXXXXXXXXXXXXXX" },
+	    new EVT.EvtAction("issuetoken", {
+	        "domain": testingTmpData.newDomainName,
+	        "names": [
+	            testingTmpData.addedTokenNamePrefix + "1",
+	            testingTmpData.addedTokenNamePrefix + "2",
+	            testingTmpData.addedTokenNamePrefix + "3"
+	        ],
+	        "owner": [
+	            Key.privateToPublic(wif)
+	        ]
+	    })
+	);
+  }
+
 
   app.post('/api/genAvatar', (req, res) => {
   	const address = req.body.address || "1BoatSLRHtKNngkdXEeobR76b53LETtpyT"

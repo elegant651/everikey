@@ -6,28 +6,29 @@ module.exports = function(app, key) {
   const network = {
     host: 'testnet1.everitoken.io',
     port: 8888,                     
-    protocol: 'https'             
+    protocol: 'http'             
   };
 
-  async function getApiInfo(){
-    let key = await EVT.EvtKey.randomPrivateKey();
+  const wif = '5JveXsE4y6PgV823mduQmkcTxYMAvpmroVXB9Xg3ckm5yRZWNq2'
+  const payer = 'EVT75KYbXJN2JsL8tCSwMwtQHDMwT4gb14mofcSEc31U28HKybJNh'
+  const publicKey = EVT.EvtKey.privateToPublic(wif)
+  console.log("key: "+publicKey)
+  //get info
+  const apiCaller = EVT({
+    endpoint: network,
+    keyProvider: wif
+  });
 
-    //get info
-    const apiCaller = EVT({
-      endpoint: network,
-      keyProvider: key
-    });
-
+  async function getApiInfo(){    
     const info = await apiCaller.getInfo();
-    console.log(info)
-    
+    console.log(info)  
   }
   
   async function createDomain() {
   	await apiCaller.pushTransaction(
-	    { maxCharge: 10000, payer: "EVTXXXXXXXXXXXXXXXXXXXXXXXXXX" },
+	    { maxCharge: 10000},
 	    new EVT.EvtAction("newdomain", {
-	        "name": testingTmpData.newDomainName,
+	        "name": 'testDomain',
 	        "creator": publicKey,
 	        "issue": {
 	            "name": "issue",
@@ -59,9 +60,9 @@ module.exports = function(app, key) {
   
   async function issueNFTTokens() {
   	await apiCaller.pushTransaction(
-	    { maxCharge: 10000, payer: "EVTXXXXXXXXXXXXXXXXXXXXXXXXXX" },
+	    { maxCharge: 10000, payer: payer },
 	    new EVT.EvtAction("issuetoken", {
-	        "domain": testingTmpData.newDomainName,
+	        "domain": 'newdomain',
 	        "names": [
 	            testingTmpData.addedTokenNamePrefix + "1",
 	            testingTmpData.addedTokenNamePrefix + "2",
@@ -73,6 +74,9 @@ module.exports = function(app, key) {
 	    })
 	);
   }
+
+  // getApiInfo()
+  createDomain()
 
 
   app.post('/api/genAvatar', (req, res) => {

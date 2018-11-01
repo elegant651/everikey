@@ -9,8 +9,16 @@ module.exports = function(app, key) {
     protocol: 'http'             
   };
 
-  const wif = '5JveXsE4y6PgV823mduQmkcTxYMAvpmroVXB9Xg3ckm5yRZWNq2'
+  const wif = '5JveXsE4y6PgV823mduQmkcTxYMAvpmroVXB9Xg3ckm5yRZWNq2' //tester1
+  // const wif = '5JaqJP8V5M1zt3Ud7xWnfXyuwx6que3H8gENeXFQjsXFv4MsbX7' //tester2
   const payer = 'EVT75KYbXJN2JsL8tCSwMwtQHDMwT4gb14mofcSEc31U28HKybJNh'
+  
+  async function randKey() {
+  	const priv_key = await EVT.EvtKey.randomPrivateKey();
+  	console.log(priv_key)	
+  }
+  
+
   const publicKey = EVT.EvtKey.privateToPublic(wif)
   console.log("key: "+publicKey)
   //get info
@@ -59,15 +67,13 @@ module.exports = function(app, key) {
 	console.log(result)
   }
   
-  async function issueNFTTokens(domainName) {
+  async function issueTokens(domainName, tokenName) {
   	const result = await apiCaller.pushTransaction(
 	    { maxCharge: 10000, payer: payer },
 	    new EVT.EvtAction("issuetoken", {
 	        "domain": domainName,
 	        "names": [
-	            "token1",
-	            "token2",
-	            "token3"
+	            tokenName	            
 	        ],
 	        "owner": [
 	            publicKey
@@ -75,6 +81,30 @@ module.exports = function(app, key) {
 	    })
 	);
 	console.log(result)
+  }
+
+  async function transferTokens(domainName, tokenName, to, memo) {
+  	const result = await apiCaller.pushTransaction(
+  		{ maxCharge: 10000, payer: payer },
+  		new EVT.EvtAction("transfer", {
+  			"domain": domainName,
+  			"name": tokenName,
+  			"to": [to],
+  			"memo": memo
+  		})
+  	);
+  	console.log(result)
+  }
+
+  async function destroyToken(domainName, tokenName) {
+  	const result = await apiCaller.pushTransaction(
+  		{ maxCharge: 10000, payer: payer },
+  		new EVT.EvtAction("destroytoken", {
+  			"domain": domainName,
+  			"name": tokenName
+  		})
+  	);
+  	console.log(result)
   }
 
   async function getDomainDetail(name) {
@@ -92,12 +122,24 @@ module.exports = function(app, key) {
   	console.log(info)
   }
 
+  async function getToken(domainName, id) {
+  	const info = await apiCaller.getToken(domainName, id)
+  	console.log(info)
+  }
+
+  // randKey()
   // getApiInfo()
+  // getDomainDetail('testDomain')  
+  // getCreatedDomains(publicKey)
   // createDomain('testDomain')
-  // issueNFTTokens('testDomain')
-  // getDomainDetail('testDomain')
-  getOwnedTokens(publicKey)
-  getCreatedDomains(publicKey)
+
+  // issueTokens('testDomain', 'token1')  
+  // transferTokens('testDomain', 'token1', 'EVT6N5mTjR4tRLr8SxVEJJP132fqqV7YvKTTMbUCb5q4yk6iUBbKR', '')
+  
+  // getOwnedTokens(publicKey)
+  getToken('testDomain', 'token1')
+  
+  
 
 
 

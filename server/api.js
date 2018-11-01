@@ -24,11 +24,11 @@ module.exports = function(app, key) {
     console.log(info)  
   }
   
-  async function createDomain() {
-  	await apiCaller.pushTransaction(
+  async function createDomain(domainName) {
+  	const result = await apiCaller.pushTransaction(
 	    { maxCharge: 10000},
 	    new EVT.EvtAction("newdomain", {
-	        "name": 'testDomain',
+	        "name": domainName,
 	        "creator": publicKey,
 	        "issue": {
 	            "name": "issue",
@@ -56,27 +56,49 @@ module.exports = function(app, key) {
 	        }
 	    })
 	);
+	console.log(result)
   }
   
-  async function issueNFTTokens() {
-  	await apiCaller.pushTransaction(
+  async function issueNFTTokens(domainName) {
+  	const result = await apiCaller.pushTransaction(
 	    { maxCharge: 10000, payer: payer },
 	    new EVT.EvtAction("issuetoken", {
-	        "domain": 'newdomain',
+	        "domain": domainName,
 	        "names": [
-	            testingTmpData.addedTokenNamePrefix + "1",
-	            testingTmpData.addedTokenNamePrefix + "2",
-	            testingTmpData.addedTokenNamePrefix + "3"
+	            "token1",
+	            "token2",
+	            "token3"
 	        ],
 	        "owner": [
-	            Key.privateToPublic(wif)
+	            publicKey
 	        ]
 	    })
 	);
+	console.log(result)
+  }
+
+  async function getDomainDetail(name) {
+  	const info = await apiCaller.getDomainDetail(name)
+  	console.log(info)
+  }
+
+  async function getOwnedTokens(pubkeys) {
+  	const info = await apiCaller.getOwnedTokens(pubkeys)
+  	console.log(info)
+  }
+
+  async function getCreatedDomains(pubkeys) {
+  	const info = await apiCaller.getCreatedDomains(pubkeys)
+  	console.log(info)
   }
 
   // getApiInfo()
-  createDomain()
+  // createDomain('testDomain')
+  // issueNFTTokens('testDomain')
+  // getDomainDetail('testDomain')
+  getOwnedTokens(publicKey)
+  getCreatedDomains(publicKey)
+
 
 
   app.post('/api/genAvatar', (req, res) => {

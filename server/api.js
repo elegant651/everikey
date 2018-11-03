@@ -137,7 +137,7 @@ module.exports = function(app, key) {
   // transferTokens('testDomain', 'token1', 'EVT6N5mTjR4tRLr8SxVEJJP132fqqV7YvKTTMbUCb5q4yk6iUBbKR', '')
   
   // getOwnedTokens(publicKey)
-  getToken('testDomain', 'token1')
+  // getToken('testDomain', 'token1')
   
   
 
@@ -151,7 +151,7 @@ module.exports = function(app, key) {
 	  walletAddress: address
 	}
 
-	request.post({url:'', formData: formData}, (err, httpResponse, body) => {
+	request.post({url:'http://mariankulisch.de/api/', formData: formData}, (err, httpResponse, body) => {
 	  if (err) {
 	    console.error('err:', err)
 	    return res.json({'flag': 0})

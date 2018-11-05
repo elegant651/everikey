@@ -13,10 +13,10 @@ module.exports = function(app, key) {
   // const wif = '5JaqJP8V5M1zt3Ud7xWnfXyuwx6que3H8gENeXFQjsXFv4MsbX7' //tester2
   const payer = 'EVT75KYbXJN2JsL8tCSwMwtQHDMwT4gb14mofcSEc31U28HKybJNh'
   
-  async function randKey() {
-  	const priv_key = await EVT.EvtKey.randomPrivateKey();
-  	console.log(priv_key)	
-  }
+  // async function randKey() {
+  // 	const priv_key = await EVT.EvtKey.randomPrivateKey();
+  // 	console.log(priv_key)	
+  // }
   
 
   const publicKey = EVT.EvtKey.privateToPublic(wif)
@@ -136,11 +136,71 @@ module.exports = function(app, key) {
   // issueTokens('testDomain', 'token1')  
   // transferTokens('testDomain', 'token1', 'EVT6N5mTjR4tRLr8SxVEJJP132fqqV7YvKTTMbUCb5q4yk6iUBbKR', '')
   
-  // getOwnedTokens(publicKey)
+  getOwnedTokens(publicKey)
   // getToken('testDomain', 'token1')
   
-  
 
+  app.post('/api/newRandKey', async (req, res) => {
+  	const priv_key = await EVT.EvtKey.randomPrivateKey();
+  	const pubkey = EVT.EvtKey.privateToPublic(priv_key)
+
+  	res.json({'flag': 1, 'result': pubkey})
+  })
+
+  
+  app.post('/api/getOwnedTokens', async (req, res) => {
+  	const pubkey = req.body.pubkey
+
+  	const info = await apiCaller.getOwnedTokens(pubkey)
+  	res.json({'flag':1, 'result': info})
+  })
+
+  app.post('/api/getToken', async (req, res) => {
+  	const domainName = req.body.domainName
+  	const tokenId = req.body.tokenId
+
+  	const info = await apiCaller.getToken(domainName, tokenId)
+  	res.json({'flag':1, 'result': info})
+  })
+
+  app.post('/api/issueToken', async (req, res) => {
+  	const domainName = req.body.domainName
+  	const tokenId = req.body.tokenId
+  	const pubkey = req.body.pubkey
+
+
+  	const result = await apiCaller.pushTransaction(
+	    { maxCharge: 10000, payer: payer },
+	    new EVT.EvtAction("issuetoken", {
+	        "domain": domainName,
+	        "names": [
+	            tokenId	            
+	        ],
+	        "owner": [
+	            pubkey
+	        ]
+	    })
+	);
+	console.log(result)
+  	res.json({'flag':1, 'result': result})
+  })
+
+  app.post('/api/transferToken', async (req, res) => {
+  	const domainName = req.body.domainName
+  	const tokenId = req.body.tokenId
+  	const to = req.body.to
+
+  	const result = await apiCaller.pushTransaction(
+  		{ maxCharge: 10000, payer: payer },
+  		new EVT.EvtAction("transfer", {
+  			"domain": domainName,
+  			"name": tokenId,
+  			"to": [to],
+  			"memo": memo
+  		})
+  	);
+  	res.json({'flag':1, 'result': result})
+  })
 
 
   app.post('/api/genAvatar', (req, res) => {

@@ -24,7 +24,7 @@
     <!-- Portfolio Grid Section -->
     <section class="portfolio" id="portfolio">
       <div class="container">
-        <h2 class="text-center text-uppercase text-secondary mb-0">PortFolio</h2>
+        <h2 class="text-center text-uppercase text-secondary mb-0">Marketplace</h2>
         <hr class="star-dark mb-5">
         <Portfolio />
       </div>

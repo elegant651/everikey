@@ -189,6 +189,7 @@ module.exports = function(app, key) {
   	const domainName = req.body.domainName
   	const tokenId = req.body.tokenId
   	const to = req.body.to
+  	const memo = ''
 
   	const result = await apiCaller.pushTransaction(
   		{ maxCharge: 10000, payer: payer },

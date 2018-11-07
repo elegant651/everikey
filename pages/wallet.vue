@@ -22,9 +22,13 @@
     	  </div>
     	</b-card>
 
+      <b-card class="selImg">
+        <b-img center thumbnail :src="selImgData" />
+      </b-card>
+
       <b-list-group class="blg">
-        <b-list-group-item class="justify-content-between align-items-center" v-for="row in result" :key="row.name">
-          <div>{{row.name}}</div>
+        <b-list-group-item class="justify-content-between align-items-center" v-for="row in result" :key="row.name" v-on:click="onClickImgData(row.name)">
+          <div class="itemP">{{row.name}}</div>
         </b-list-group-item>
       </b-list-group>
     </div>
@@ -33,6 +37,8 @@
 
 <script>
   import qs from 'qs';
+  import firebase from 'firebase'
+  import firebaseStore from 'firebase/firestore'
   import CommonNav from '~/components/landing/CommonNav.vue'
 
   export default {     
@@ -44,10 +50,11 @@
       return {
         uname: 'EveriKing',
         gender: 'male',        
-        account: 'EVT75KYbXJN2JsL8tCSwMwtQHDMwT4gb14mofcSEc31U28HKybJNh',
+        account: 'EVT7j9oCTw47N5eehFFePTVA1cS53sHegMUGEo99MvsMesjne6WXF',
         balance: null,
         errored: false,
-        result: null
+        result: null,
+        selImgData: null
       }      
     },
     computed: {
@@ -65,6 +72,16 @@
     },
 
     mounted() {
+      const config = {
+        apiKey: "AIzaSyCsVi15QQTbjtEYkl0nAiIxqldW3hU1orM",
+        authDomain: "avarkey-bb036.firebaseapp.com",
+        databaseURL: "https://avarkey-bb036.firebaseio.com",
+        projectId: "avarkey-bb036",
+        storageBucket: "",
+        messagingSenderId: "725374065200"
+      };
+      firebase.initializeApp(config);    
+
       this.$axios
         .$post('/api/getOwnedTokens', qs.stringify({'pubkey': this.account}))
         .then(response => {
@@ -75,7 +92,23 @@
         }).catch(error => {
           console.log(error)
         })
-    }   
+    },
+
+    methods: {
+      onClickImgData(key) {
+        const db = firebase.firestore()
+        db.collection("hashes").doc(key).get().then((querySnapshot) => {
+            console.log(querySnapshot.data())
+            const ipfsHash = querySnapshot.data().ipfsHash
+
+            this.$axios.get('https://gateway.ipfs.io/ipfs/'+ipfsHash)
+            .then( (response) => {
+              this.selImgData = response.data
+            })
+        });
+
+      }
+    }
   }
 </script>
 <style scoped>
@@ -104,5 +137,9 @@
   .profile-info .balance {
     font-size: 16px;
     font-weight: 700;
+  }
+
+  .itemP {
+    cursor: pointer;
   }
 </style>

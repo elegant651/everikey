@@ -13,7 +13,7 @@
           </b-input-group-append>
         </b-input-group>
       </b-form>
-<!-- <b-img center thumbnail :src="uploadedData" /> -->
+
       <div id="imgBox">
       	<b-img id="genImg" center thumbnail :src="genImgData" />
 
@@ -63,19 +63,20 @@ export default {
     }
   },
 
-  mounted() {
-    // this.$axios.get('https://gateway.ipfs.io/ipfs/QmZa1a94X8jdFoGGVGuo1SWqy9tom1RLLEmhBXB8sJQDPF')
-    // .then( (response) => {
-    //   // handle success
-    //   console.log(response.data);
-    //   this.uploadedData = response.data
-    // })
-
+  mounted() {    
     // this.ipfsHash = 'QmZa1a94X8jdFoGGVGuo1SWqy9tom1RLLEmhBXB8sJQDPF'
     // this.address = 'EVT75KYbXJN2JsL8tCSwMwtQHDMwT4gb14mofcSEc31U28HKybJNh'
     // this.issueToken()
 
-    
+    const config = {
+      apiKey: "AIzaSyCsVi15QQTbjtEYkl0nAiIxqldW3hU1orM",
+      authDomain: "avarkey-bb036.firebaseapp.com",
+      databaseURL: "https://avarkey-bb036.firebaseio.com",
+      projectId: "avarkey-bb036",
+      storageBucket: "",
+      messagingSenderId: "725374065200"
+    };
+    firebase.initializeApp(config);    
   },
 
   methods: {

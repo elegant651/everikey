@@ -6,7 +6,7 @@
       <h2>Marketplace</h2>
 
       <div class="portfolio">
-        <div class="row">
+        <div class="row" v-on:click="transferToken()">
           <div class="col-md-6 col-lg-4">
             <a class="portfolio-item d-block mx-auto" href="#portfolio-modal-1">
               <div class="portfolio-item-caption d-flex position-absolute h-100 w-100">
@@ -14,7 +14,7 @@
                   <i class="fas fa-search-plus fa-3x"></i>
                 </div>
               </div>
-              <img class="img-fluid" src="/portfolio/a.jpg" alt="">
+              <img class="img-fluid" src="/portfolio/g.png" alt="">
             </a>
           </div>
           <div class="col-md-6 col-lg-4">
@@ -85,6 +85,37 @@
       CommonNav
     },
 
+    data() {
+      return {        
+        address: 'EVT7j9oCTw47N5eehFFePTVA1cS53sHegMUGEo99MvsMesjne6WXF'
+      }      
+    },
+
+    methods: {
+
+      transferToken() {
+        const isConfirm = confirm('Do you want to buy it?')
+        if(!isConfirm){
+          return
+        }
+
+        const tokenId = 'mbcbFtzxLVbdXousZQYl'
+        this.$axios
+          .$post('/api/transferToken', qs.stringify({'domainName': 'testDomain', 'tokenId': tokenId, 'to': this.address}))
+          .then(response => {
+            console.log("result", response)
+            if(response.flag==1){
+              const result = response.result
+              
+              alert("token transfered complete!")
+            }
+          }).catch(error => {
+            console.log(error)
+
+            alert("token transfered failed!")
+          })
+      }
+    }
   }
 </script>
 <style scoped>
